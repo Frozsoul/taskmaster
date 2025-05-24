@@ -24,7 +24,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
 const navItems = [
-  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard }, // Updated href
+  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/tasks", label: "Tasks", icon: ListChecks },
   { href: "/content-studio", label: "Content Studio", icon: Share2 },
   { href: "/calendar", label: "Calendar", icon: CalendarDays },
@@ -33,7 +33,7 @@ const navItems = [
 
 // New SVG Logo Component
 const MiinTaskMasterLogo = () => (
-  <svg aria-label="MiinTaskMaster Logo" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-primary group-data-[state=expanded]:text-accent">
+  <svg aria-label="MiinTaskMaster Logo" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-primary group-data-[state=expanded]:text-accent">
     <path d="M5 32 L15 8 L20 8 L12 20 L20 32 Z" fill="currentColor"/>
     <path d="M35 32 L25 8 L20 8 L28 20 L20 32 Z" fill="hsl(var(--sidebar-primary))"/>
   </svg>
@@ -45,7 +45,7 @@ export function AppSidebar() {
   return (
     <Sidebar side="left" collapsible="icon">
       <SidebarHeader className="p-4">
-        <Link href="/dashboard" className="flex items-center gap-2 group-data-[collapsible=icon]:justify-center"> {/* Updated href for logo link */}
+        <Link href="/dashboard" className="flex items-center gap-2 group-data-[collapsible=icon]:justify-center">
           <MiinTaskMasterLogo />
           <span className="font-bold text-xl group-data-[collapsible=icon]:hidden text-sidebar-foreground">MiinTaskMaster</span>
         </Link>
