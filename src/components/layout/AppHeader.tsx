@@ -52,7 +52,7 @@ export function AppHeader() {
           </Button>
           <Avatar className="h-9 w-9">
             <AvatarImage src="https://placehold.co/100x100.png" alt="User Avatar" data-ai-hint="user avatar" />
-            <AvatarFallback>MM</AvatarFallback>
+            <AvatarFallback>MT</AvatarFallback>
           </Avatar>
         </div>
       </div>

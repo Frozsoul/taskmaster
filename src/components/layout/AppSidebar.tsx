@@ -18,8 +18,7 @@ import {
   CalendarDays, 
   ListTodo,
   Settings,
-  LogOut,
-  Boxes // Using Boxes as a generic logo
+  LogOut
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -32,6 +31,14 @@ const navItems = [
   { href: "/prioritize", label: "Prioritize Tasks", icon: ListTodo },
 ];
 
+// New SVG Logo Component
+const MiinTaskMasterLogo = () => (
+  <svg aria-label="MiinTaskMaster Logo" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-primary group-data-[state=expanded]:text-accent">
+    <path d="M5 32 L15 8 L20 8 L12 20 L20 32 Z" fill="currentColor"/>
+    <path d="M35 32 L25 8 L20 8 L28 20 L20 32 Z" fill="hsl(var(--sidebar-primary))"/>
+  </svg>
+);
+
 export function AppSidebar() {
   const pathname = usePathname();
 
@@ -39,8 +46,8 @@ export function AppSidebar() {
     <Sidebar side="left" collapsible="icon">
       <SidebarHeader className="p-4">
         <Link href="/" className="flex items-center gap-2 group-data-[collapsible=icon]:justify-center">
-          <Boxes className="h-8 w-8 text-primary group-data-[state=expanded]:text-accent" />
-          <span className="font-bold text-xl group-data-[collapsible=icon]:hidden text-sidebar-foreground">MiiManage</span>
+          <MiinTaskMasterLogo />
+          <span className="font-bold text-xl group-data-[collapsible=icon]:hidden text-sidebar-foreground">MiinTaskMaster</span>
         </Link>
       </SidebarHeader>
       <SidebarContent className="p-2">

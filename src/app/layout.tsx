@@ -4,7 +4,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { AppDataProvider } from '@/context/AppDataContext';
 
 export const metadata: Metadata = {
-  title: 'MiiManage',
+  title: 'MiinTaskMaster',
   description: 'Manage your tasks and social media content efficiently.',
 };
 
