@@ -31,11 +31,25 @@ const navItems = [
   { href: "/prioritize", label: "Prioritize Tasks", icon: ListTodo },
 ];
 
-// New SVG Logo Component
+// Updated SVG Logo Component
 const MiinTaskMasterLogo = () => (
-  <svg aria-label="MiinTaskMaster Logo" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-primary group-data-[state=expanded]:text-accent">
-    <path d="M5 32 L15 8 L20 8 L12 20 L20 32 Z" fill="currentColor"/>
-    <path d="M35 32 L25 8 L20 8 L28 20 L20 32 Z" fill="hsl(var(--sidebar-primary))"/>
+  <svg
+    aria-label="MiinTaskMaster Logo"
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 500 500"
+    className="h-10 w-10 text-primary group-data-[state=expanded]:text-accent"
+    fill="none"
+  >
+    <g>
+        <polygon
+          fill="currentColor"
+          points="4,262 66.8,304.9 169.1,244.2 169.1,328.1 233.3,366.3 233.3,133"
+        />
+        <polygon
+          fill="hsl(var(--sidebar-primary))" 
+          points="496,262 433.2,304.9 330.9,244.2 330.9,328.1 266.7,366.3 266.7,133"
+        />
+    </g>
   </svg>
 );
 
