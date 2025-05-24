@@ -24,7 +24,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
 const navItems = [
-  { href: "/", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard }, // Updated href
   { href: "/tasks", label: "Tasks", icon: ListChecks },
   { href: "/content-studio", label: "Content Studio", icon: Share2 },
   { href: "/calendar", label: "Calendar", icon: CalendarDays },
@@ -45,7 +45,7 @@ export function AppSidebar() {
   return (
     <Sidebar side="left" collapsible="icon">
       <SidebarHeader className="p-4">
-        <Link href="/" className="flex items-center gap-2 group-data-[collapsible=icon]:justify-center">
+        <Link href="/dashboard" className="flex items-center gap-2 group-data-[collapsible=icon]:justify-center"> {/* Updated href for logo link */}
           <MiinTaskMasterLogo />
           <span className="font-bold text-xl group-data-[collapsible=icon]:hidden text-sidebar-foreground">MiinTaskMaster</span>
         </Link>

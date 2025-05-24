@@ -1,13 +1,11 @@
 
-// This file effectively delegates to src/app/(app)/page.tsx due to route grouping.
-// You can add a redirect here if needed, or specific landing page content
-// if the dashboard is not the absolute root. For now, it will render the (app) layout's
-// default page, which we will make the dashboard.
-
-// Forcing the (app)/page.tsx to be rendered for the root path.
-// If you want a separate landing page, create content here and a link to /dashboard (or whatever (app)/page is)
-import DashboardPage from "./(app)/page";
+// This file is the root entry point for the '/' path.
+// It redirects to '/dashboard' which is handled by the (app) route group
+// to ensure the AuthenticatedAppLayout (with sidebar) is applied.
+import { redirect } from 'next/navigation';
 
 export default function HomePage() {
-  return <DashboardPage />;
+  redirect('/dashboard');
+  // For server components, the redirect call is sufficient and will stop rendering.
+  // No explicit return null is typically needed unless for specific linting or type reasons.
 }
