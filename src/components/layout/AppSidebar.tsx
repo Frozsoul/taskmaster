@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/context/AuthContext"; // Added useAuth
 
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -31,22 +32,21 @@ const navItems = [
   { href: "/prioritize", label: "Prioritize Tasks", icon: ListTodo },
 ];
 
-// Updated SVG Logo Component
-const MiinTaskMasterLogo = () => (
+export const MiinTaskMasterLogo = () => ( // Exported for use in LoginPage if needed
   <svg
     aria-label="MiinTaskMaster Logo"
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 500 500"
-    className="h-10 w-10 text-primary group-data-[state=expanded]:text-accent"
+    className="h-10 w-10 text-primary group-data-[state=expanded]:text-accent" // Adjusted class for direct primary and accent
     fill="none"
   >
     <g>
         <polygon
-          fill="currentColor"
+          fill="currentColor" // Will take text-primary
           points="4,262 66.8,304.9 169.1,244.2 169.1,328.1 233.3,366.3 233.3,133"
         />
         <polygon
-          fill="hsl(var(--sidebar-primary))" 
+          className="group-data-[state=expanded]:fill-[hsl(var(--accent))] fill-[hsl(var(--sidebar-primary))]" // More specific fill for expanded state
           points="496,262 433.2,304.9 330.9,244.2 330.9,328.1 266.7,366.3 266.7,133"
         />
     </g>
@@ -55,6 +55,7 @@ const MiinTaskMasterLogo = () => (
 
 export function AppSidebar() {
   const pathname = usePathname();
+  const { logout, currentUser } = useAuth(); // Added currentUser for conditional rendering if needed
 
   return (
     <Sidebar side="left" collapsible="icon">
@@ -85,27 +86,31 @@ export function AppSidebar() {
           ))}
         </SidebarMenu>
       </SidebarContent>
-      <SidebarFooter className="p-2 mt-auto border-t border-sidebar-border">
-         <SidebarMenu>
-            <SidebarMenuItem>
-                <SidebarMenuButton
-                  className="w-full justify-start"
-                  tooltip={{ children: "Settings", className: "text-xs" }}
-                >
-                  <Settings className="h-5 w-5" />
-                  <span className="group-data-[collapsible=icon]:hidden">Settings</span>
-                </SidebarMenuButton>
-            </SidebarMenuItem>
-            <SidebarMenuItem>
-                <Button variant="ghost" className="w-full justify-start text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground group-data-[collapsible=icon]:p-2 group-data-[collapsible=icon]:h-8 group-data-[collapsible=icon]:w-8" 
-                  // This button style needs to be improved for collapsed state, or use SidebarMenuButton
-                >
-                  <LogOut className="h-5 w-5" />
-                  <span className="group-data-[collapsible=icon]:hidden">Log Out</span>
-                </Button>
-            </SidebarMenuItem>
-         </SidebarMenu>
-      </SidebarFooter>
+      { currentUser && ( // Only show footer if user is logged in
+        <SidebarFooter className="p-2 mt-auto border-t border-sidebar-border">
+           <SidebarMenu>
+              <SidebarMenuItem>
+                  <SidebarMenuButton
+                    className="w-full justify-start"
+                    tooltip={{ children: "Settings", className: "text-xs" }}
+                  >
+                    <Settings className="h-5 w-5" />
+                    <span className="group-data-[collapsible=icon]:hidden">Settings</span>
+                  </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                  <SidebarMenuButton
+                    onClick={logout}
+                    className="w-full justify-start"
+                    tooltip={{ children: "Log Out", className: "text-xs" }}
+                  >
+                    <LogOut className="h-5 w-5" />
+                    <span className="group-data-[collapsible=icon]:hidden">Log Out</span>
+                  </SidebarMenuButton>
+              </SidebarMenuItem>
+           </SidebarMenu>
+        </SidebarFooter>
+      )}
     </Sidebar>
   );
 }
