@@ -49,11 +49,22 @@ const convertTimestampsToDates = (data: Record<string, any>): Record<string, any
   for (const key in data) {
     if (data[key] instanceof Timestamp) {
       newObj[key] = data[key].toDate();
-    } else if (typeof data[key] === 'object' && data[key] !== null && !Array.isArray(data[key])) {
+    } else if (typeof data[key] === 'object' && data[key] !== null && !Array.isArray(data[key]) && !(data[key] instanceof Date)) {
+      // Recurse for plain objects, but not for Date objects themselves
       newObj[key] = convertTimestampsToDates(data[key]);
-    }
-     else {
+    } else {
       newObj[key] = data[key];
+    }
+  }
+  return newObj;
+};
+
+// Helper function to remove undefined properties from an object
+const removeUndefinedProps = (obj: Record<string, any>): Record<string, any> => {
+  const newObj: Record<string, any> = {};
+  for (const key in obj) {
+    if (obj[key] !== undefined) {
+      newObj[key] = obj[key];
     }
   }
   return newObj;
@@ -89,7 +100,7 @@ export const AppDataProvider = ({ children }: { children: ReactNode }) => {
         ...convertTimestampsToDates(doc.data()),
       } as Task));
       setTasks(fetchedTasks);
-      setIsLoadingData(false);
+      setIsLoadingData(false); // Set loading to false after tasks are fetched
     }, (error) => {
       console.error("Error fetching tasks:", error);
       toast({ title: "Error", description: "Could not fetch tasks.", variant: "destructive" });
@@ -103,7 +114,8 @@ export const AppDataProvider = ({ children }: { children: ReactNode }) => {
         ...convertTimestampsToDates(doc.data()),
       } as SocialMediaPost));
       setPosts(fetchedPosts);
-      // Keep isLoadingData controlled by tasks fetch or combine logic
+      // Potentially set loading false here too if tasks can be empty but posts exist
+      // For simplicity, we let tasks fetch control the main isLoadingData indicator
     }, (error) => {
       console.error("Error fetching posts:", error);
       toast({ title: "Error", description: "Could not fetch posts.", variant: "destructive" });
@@ -122,8 +134,9 @@ export const AppDataProvider = ({ children }: { children: ReactNode }) => {
     }
     try {
       const tasksCollectionPath = `users/${currentUser.uid}/tasks`;
+      const cleanedTaskData = removeUndefinedProps(taskData);
       const newTaskPayload = {
-        ...taskData,
+        ...cleanedTaskData,
         userId: currentUser.uid,
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
@@ -142,7 +155,15 @@ export const AppDataProvider = ({ children }: { children: ReactNode }) => {
       return;
     }
     try {
-      const { id, ...dataToUpdate } = updatedTaskData;
+      const { id, ...restOfData } = updatedTaskData;
+      const dataToUpdate = removeUndefinedProps(restOfData);
+
+      if (Object.keys(dataToUpdate).length === 0 && id) {
+        // If only id is passed and rest is undefined, no actual update is needed beyond timestamp.
+        // Or, if specific logic for no actual data change is desired.
+        // For now, we'll assume if dataToUpdate is empty, we just update the timestamp.
+      }
+      
       const taskDocRef = doc(db, `users/${currentUser.uid}/tasks`, id);
       await updateDoc(taskDocRef, {
         ...dataToUpdate,
@@ -182,8 +203,9 @@ export const AppDataProvider = ({ children }: { children: ReactNode }) => {
     }
     try {
       const postsCollectionPath = `users/${currentUser.uid}/posts`;
+      const cleanedPostData = removeUndefinedProps(postData);
       const newPostPayload = {
-        ...postData,
+        ...cleanedPostData,
         userId: currentUser.uid,
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
@@ -202,7 +224,8 @@ export const AppDataProvider = ({ children }: { children: ReactNode }) => {
       return;
     }
     try {
-      const { id, ...dataToUpdate } = updatedPostData;
+      const { id, ...restOfData } = updatedPostData;
+      const dataToUpdate = removeUndefinedProps(restOfData);
       const postDocRef = doc(db, `users/${currentUser.uid}/posts`, id);
       await updateDoc(postDocRef, {
         ...dataToUpdate,
@@ -340,3 +363,4 @@ export const useAppData = () => {
   }
   return context;
 };
+
