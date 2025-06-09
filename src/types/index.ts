@@ -1,3 +1,4 @@
+
 export type Status = 'To Do' | 'In Progress' | 'Done' | 'Blocked';
 export type Priority = 'Low' | 'Medium' | 'High' | 'Urgent';
 export type Platform = 'X' | 'LinkedIn' | 'Instagram' | 'General';
@@ -5,6 +6,7 @@ export type PostStatus = 'Draft' | 'Scheduled' | 'Posted' | 'Needs Approval';
 
 export interface Task {
   id: string;
+  userId: string; // Added userId
   title: string;
   description?: string;
   status: Status;
@@ -18,6 +20,7 @@ export interface Task {
 
 export interface SocialMediaPost {
   id: string;
+  userId: string; // Added userId
   platform: Platform;
   content: string;
   scheduledDate?: Date;
