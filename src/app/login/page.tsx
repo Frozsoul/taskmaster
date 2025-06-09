@@ -28,15 +28,9 @@ export default function LoginPage() {
       <Card className="w-full max-w-md shadow-xl">
         <CardHeader className="text-center">
           <div className="mx-auto mb-4">
-            {/* Using a simplified placeholder or ensure MiinTaskMasterLogo is adapted */}
-            <svg aria-label="MiinTaskMaster Logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" className="h-16 w-16 text-primary mx-auto" fill="none">
-              <g>
-                  <polygon fill="currentColor" points="4,262 66.8,304.9 169.1,244.2 169.1,328.1 233.3,366.3 233.3,133"/>
-                  <polygon fill="hsl(var(--accent))" points="496,262 433.2,304.9 330.9,244.2 330.9,328.1 266.7,366.3 266.7,133"/>
-              </g>
-            </svg>
+            <MiinTaskMasterLogo />
           </div>
-          <CardTitle className="text-3xl font-bold text-primary">MiinTaskMaster</CardTitle>
+          <CardTitle className="text-3xl font-bold text-primary">MiinPlanner</CardTitle>
           <CardDescription className="text-muted-foreground">Sign in to access your workspace</CardDescription>
         </CardHeader>
         <CardContent>

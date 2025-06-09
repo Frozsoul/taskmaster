@@ -46,7 +46,7 @@ export const MiinTaskMasterLogo = () => ( // Exported for use in LoginPage if ne
           points="4,262 66.8,304.9 169.1,244.2 169.1,328.1 233.3,366.3 233.3,133"
         />
         <polygon
-          className="group-data-[state=expanded]:fill-[hsl(var(--accent))] fill-[hsl(var(--sidebar-primary))]" // More specific fill for expanded state
+          className="fill-[hsl(var(--accent))]" // Uses accent color directly, no need for complex group selector here if it always uses accent
           points="496,262 433.2,304.9 330.9,244.2 330.9,328.1 266.7,366.3 266.7,133"
         />
     </g>
@@ -62,7 +62,7 @@ export function AppSidebar() {
       <SidebarHeader className="p-4">
         <Link href="/dashboard" className="flex items-center gap-2 group-data-[collapsible=icon]:justify-center">
           <MiinTaskMasterLogo />
-          <span className="font-bold text-xl group-data-[collapsible=icon]:hidden text-sidebar-foreground">MiinTaskMaster</span>
+          <span className="font-bold text-xl group-data-[collapsible=icon]:hidden text-sidebar-foreground">MiinPlanner</span>
         </Link>
       </SidebarHeader>
       <SidebarContent className="p-2">

@@ -6,7 +6,7 @@ import { AppDataProvider } from '@/context/AppDataContext';
 import { AuthProvider } from '@/context/AuthContext'; // Added AuthProvider
 
 export const metadata: Metadata = {
-  title: 'MiinTaskMaster',
+  title: 'MiinPlanner',
   description: 'Manage your tasks and social media content efficiently.',
 };
 

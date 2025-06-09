@@ -45,7 +45,7 @@ export function AppHeader() {
     if (currentUser?.email) {
       return currentUser.email.substring(0, 2).toUpperCase();
     }
-    return "MT"; // Fallback for MiinTaskMaster
+    return "MP"; // Fallback for MiinPlanner
   };
 
 
