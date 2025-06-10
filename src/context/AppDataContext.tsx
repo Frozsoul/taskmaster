@@ -11,7 +11,8 @@ import { db } from '@/lib/firebase';
 import { 
   collection, 
   query, 
-  onSnapshot, 
+  // onSnapshot, // Temporarily removed for getDocs testing
+  getDocs,     // Added for one-time fetch
   addDoc, 
   doc, 
   updateDoc, 
@@ -19,6 +20,7 @@ import {
   serverTimestamp,
   Timestamp,
   FirestoreError,
+  // orderBy // Temporarily removed as onSnapshot is commented out
 } from 'firebase/firestore';
 
 interface AppDataContextType {
@@ -84,18 +86,55 @@ export const AppDataProvider = ({ children }: { children: ReactNode }) => {
       setTasks([]);
       setPosts([]);
       setPrioritizedSuggestions([]);
-      setIsLoadingData(false);
+      setIsLoadingData(false); // Set to false as there's nothing to load
       return;
     }
 
-    console.log(`AppDataContext: Valid currentUser.uid detected: ${currentUser.uid}. Proceeding to set up listeners.`);
+    console.log(`AppDataContext: Valid currentUser.uid detected: ${currentUser.uid}. Proceeding to fetch data.`);
     setIsLoadingData(true);
 
     const tasksCollectionPath = `users/${currentUser.uid}/tasks`;
     const postsCollectionPath = `users/${currentUser.uid}/posts`;
 
+    const fetchData = async () => {
+      try {
+        // Fetch Tasks
+        console.log(`AppDataContext: Attempting getDocs for tasks at path: ${tasksCollectionPath}`);
+        const tasksQuery = query(collection(db, tasksCollectionPath));
+        const tasksSnapshot = await getDocs(tasksQuery);
+        console.log(`AppDataContext: Tasks getDocs received for ${currentUser.uid}. Docs count: ${tasksSnapshot.docs.length}.`);
+        const fetchedTasks = tasksSnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...convertTimestampsToDates(doc.data()),
+        } as Task));
+        setTasks(fetchedTasks);
+
+        // Fetch Posts
+        console.log(`AppDataContext: Attempting getDocs for posts at path: ${postsCollectionPath}`);
+        const postsQuery = query(collection(db, postsCollectionPath));
+        const postsSnapshot = await getDocs(postsQuery);
+        console.log(`AppDataContext: Posts getDocs received for ${currentUser.uid}. Docs count: ${postsSnapshot.docs.length}.`);
+        const fetchedPosts = postsSnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...convertTimestampsToDates(doc.data()),
+        } as SocialMediaPost));
+        setPosts(fetchedPosts);
+
+      } catch (error) {
+        const firestoreError = error as FirestoreError;
+        console.error(`AppDataContext: Error fetching data with getDocs. Code: ${firestoreError.code}, Message: ${firestoreError.message}`, firestoreError);
+        toast({ title: "Error Fetching Data", description: `Could not fetch data: ${firestoreError.message}. Check console.`, variant: "destructive" });
+      } finally {
+        setIsLoadingData(false);
+      }
+    };
+
+    fetchData();
+
+    // Temporarily commenting out onSnapshot listeners
+    /*
     console.log(`AppDataContext: Listening to tasks at path: ${tasksCollectionPath}`);
-    const qTasks = query(collection(db, tasksCollectionPath));
+    const qTasks = query(collection(db, tasksCollectionPath)); // Removed orderBy for diagnostics
     const unsubscribeTasks = onSnapshot(qTasks, (snapshot) => {
       console.log(`AppDataContext: Tasks snapshot received for ${currentUser.uid}. Docs count: ${snapshot.docs.length}. Has pending writes: ${snapshot.metadata.hasPendingWrites}`);
       const fetchedTasks = snapshot.docs.map(doc => ({
@@ -103,15 +142,15 @@ export const AppDataProvider = ({ children }: { children: ReactNode }) => {
         ...convertTimestampsToDates(doc.data()),
       } as Task));
       setTasks(fetchedTasks);
-      setIsLoadingData(false);
+      setIsLoadingData(false); // Moved to finally block of fetchData
     }, (error: FirestoreError) => {
       console.error(`AppDataContext: Error fetching tasks (onSnapshot) for path ${tasksCollectionPath}. Code: ${error.code}, Message: ${error.message}`, error);
       toast({ title: "Error Fetching Tasks", description: `Could not fetch tasks: ${error.message}. Check console.`, variant: "destructive" });
-      setIsLoadingData(false);
+      setIsLoadingData(false); // Moved to finally block of fetchData
     });
 
     console.log(`AppDataContext: Listening to posts at path: ${postsCollectionPath}`);
-    const qPosts = query(collection(db, postsCollectionPath));
+    const qPosts = query(collection(db, postsCollectionPath)); // Removed orderBy for diagnostics
     const unsubscribePosts = onSnapshot(qPosts, (snapshot) => {
       console.log(`AppDataContext: Posts snapshot received for ${currentUser.uid}. Docs count: ${snapshot.docs.length}. Has pending writes: ${snapshot.metadata.hasPendingWrites}`);
       const fetchedPosts = snapshot.docs.map(doc => ({
@@ -119,17 +158,18 @@ export const AppDataProvider = ({ children }: { children: ReactNode }) => {
         ...convertTimestampsToDates(doc.data()),
       } as SocialMediaPost));
       setPosts(fetchedPosts);
-      setIsLoadingData(false);
+      setIsLoadingData(false); // Moved to finally block of fetchData
     }, (error: FirestoreError) => {
       console.error(`AppDataContext: Error fetching posts (onSnapshot) for path ${postsCollectionPath}. Code: ${error.code}, Message: ${error.message}`, error);
       toast({ title: "Error Fetching Posts", description: `Could not fetch posts: ${error.message}. Check console.`, variant: "destructive" });
-      setIsLoadingData(false);
+      setIsLoadingData(false); // Moved to finally block of fetchData
     });
-
+    */
+    
     return () => {
-      console.log(`AppDataContext: Cleaning up listeners for user UID: ${currentUser?.uid}`);
-      unsubscribeTasks();
-      unsubscribePosts();
+      console.log(`AppDataContext: useEffect cleanup for user UID: ${currentUser?.uid}. (No active listeners to unsubscribe due to getDocs test)`);
+      // unsubscribeTasks(); // No longer needed for getDocs test
+      // unsubscribePosts(); // No longer needed for getDocs test
     };
   }, [currentUser, toast]);
 
@@ -148,12 +188,14 @@ export const AppDataProvider = ({ children }: { children: ReactNode }) => {
     };
     try {
       console.log(`AppDataContext: Adding task to path: ${tasksCollectionPath}`, "Payload:", newTaskPayload);
-      await addDoc(collection(db, tasksCollectionPath), newTaskPayload);
+      const docRef = await addDoc(collection(db, tasksCollectionPath), newTaskPayload);
       toast({ title: "Task Added", description: `Task "${taskData.title}" has been successfully added.` });
+      // Manually update local state after successful add, as onSnapshot is off
+      setTasks(prevTasks => [...prevTasks, { id: docRef.id, ...taskData, userId: currentUser.uid, createdAt: new Date(), updatedAt: new Date() } as Task]);
     } catch (error) {
       const firestoreError = error as FirestoreError;
       console.error(`AppDataContext: Error adding task to ${tasksCollectionPath}. Code: ${firestoreError.code}, Message: ${firestoreError.message}`, firestoreError);
-      toast({ title: "Error Adding Task", description: `Could not add task: ${firestoreError.message}`, variant: "destructive" });
+      toast({ title: "Error Adding Task", description: `Could not add task: ${firestoreError.message}. Check console.`, variant: "destructive" });
     }
   };
 
@@ -172,10 +214,12 @@ export const AppDataProvider = ({ children }: { children: ReactNode }) => {
         updatedAt: serverTimestamp(),
       });
       toast({ title: "Task Updated", description: `Task "${dataToUpdate.title || 'Task'}" has been successfully updated.` });
+      // Manually update local state
+      setTasks(prevTasks => prevTasks.map(task => task.id === id ? { ...task, ...dataToUpdate, updatedAt: new Date() } : task));
     } catch (error) {
       const firestoreError = error as FirestoreError;
       console.error(`AppDataContext: Error updating task at ${taskDocRef.path}. Code: ${firestoreError.code}, Message: ${firestoreError.message}`, firestoreError);
-      toast({ title: "Error Updating Task", description: `Could not update task: ${firestoreError.message}`, variant: "destructive" });
+      toast({ title: "Error Updating Task", description: `Could not update task: ${firestoreError.message}. Check console.`, variant: "destructive" });
     }
   };
 
@@ -190,10 +234,12 @@ export const AppDataProvider = ({ children }: { children: ReactNode }) => {
       console.log(`AppDataContext: Deleting task at path: ${taskDocRef.path}`);
       await deleteDoc(taskDocRef);
       toast({ title: "Task Deleted", description: `Task "${taskToDelete?.title || 'Task'}" has been deleted.`, variant: "destructive" });
+      // Manually update local state
+      setTasks(prevTasks => prevTasks.filter(task => task.id !== taskId));
     } catch (error) {
       const firestoreError = error as FirestoreError;
       console.error(`AppDataContext: Error deleting task at ${taskDocRef.path}. Code: ${firestoreError.code}, Message: ${firestoreError.message}`, firestoreError);
-      toast({ title: "Error Deleting Task", description: `Could not delete task: ${firestoreError.message}`, variant: "destructive" });
+      toast({ title: "Error Deleting Task", description: `Could not delete task: ${firestoreError.message}. Check console.`, variant: "destructive" });
     }
   };
   
@@ -212,12 +258,14 @@ export const AppDataProvider = ({ children }: { children: ReactNode }) => {
     };
     try {
       console.log(`AppDataContext: Adding post to path: ${postsCollectionPath}`, "Payload:", newPostPayload);
-      await addDoc(collection(db, postsCollectionPath), newPostPayload);
+      const docRef = await addDoc(collection(db, postsCollectionPath), newPostPayload);
       toast({ title: "Post Added", description: `A new post for ${postData.platform} has been added.` });
+      // Manually update local state
+       setPosts(prevPosts => [...prevPosts, {id: docRef.id, ...postData, userId: currentUser.uid, createdAt: new Date(), updatedAt: new Date()} as SocialMediaPost]);
     } catch (error) {
       const firestoreError = error as FirestoreError;
       console.error(`AppDataContext: Error adding post to ${postsCollectionPath}. Code: ${firestoreError.code}, Message: ${firestoreError.message}`, firestoreError);
-      toast({ title: "Error Adding Post", description: `Could not add post: ${firestoreError.message}`, variant: "destructive" });
+      toast({ title: "Error Adding Post", description: `Could not add post: ${firestoreError.message}. Check console.`, variant: "destructive" });
     }
   };
 
@@ -236,10 +284,12 @@ export const AppDataProvider = ({ children }: { children: ReactNode }) => {
         updatedAt: serverTimestamp(),
       });
       toast({ title: "Post Updated", description: `Post for ${dataToUpdate.platform || 'platform'} has been updated.` });
+      // Manually update local state
+      setPosts(prevPosts => prevPosts.map(post => post.id === id ? { ...post, ...dataToUpdate, updatedAt: new Date() } : post));
     } catch (error) {
       const firestoreError = error as FirestoreError;
       console.error(`AppDataContext: Error updating post at ${postDocRef.path}. Code: ${firestoreError.code}, Message: ${firestoreError.message}`, firestoreError);
-      toast({ title: "Error Updating Post", description: `Could not update post: ${firestoreError.message}`, variant: "destructive" });
+      toast({ title: "Error Updating Post", description: `Could not update post: ${firestoreError.message}. Check console.`, variant: "destructive" });
     }
   };
 
@@ -254,10 +304,12 @@ export const AppDataProvider = ({ children }: { children: ReactNode }) => {
       console.log(`AppDataContext: Deleting post at path: ${postDocRef.path}`);
       await deleteDoc(postDocRef);
       toast({ title: "Post Deleted", description: `Post for ${postToDelete?.platform || 'Post'} has been deleted.`, variant: "destructive" });
+      // Manually update local state
+      setPosts(prevPosts => prevPosts.filter(post => post.id !== postId));
     } catch (error) {
       const firestoreError = error as FirestoreError;
       console.error(`AppDataContext: Error deleting post at ${postDocRef.path}. Code: ${firestoreError.code}, Message: ${firestoreError.message}`, firestoreError);
-      toast({ title: "Error Deleting Post", description: `Could not delete post: ${firestoreError.message}`, variant: "destructive" });
+      toast({ title: "Error Deleting Post", description: `Could not delete post: ${firestoreError.message}. Check console.`, variant: "destructive" });
     }
   };
 
@@ -278,7 +330,7 @@ export const AppDataProvider = ({ children }: { children: ReactNode }) => {
         tasks: tasks.map(task => ({
           title: task.title,
           description: task.description || '',
-          dueDate: task.dueDate ? task.dueDate.toISOString() : new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
+          dueDate: task.dueDate ? task.dueDate.toISOString() : new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(), // Far future if no due date
           impact: task.priority, 
         })),
       };
@@ -288,13 +340,13 @@ export const AppDataProvider = ({ children }: { children: ReactNode }) => {
         const suggestions: PrioritizedTaskSuggestion[] = result.prioritizedTasks.map(pt => {
           const originalTask = tasks.find(t => t.title === pt.title); 
           return {
-            taskId: originalTask?.id || `temp_id_${Math.random().toString(36).substr(2, 9)}`,
+            taskId: originalTask?.id || `temp_id_${Math.random().toString(36).substr(2, 9)}`, // Temporary ID if not found by title
             title: pt.title,
-            currentPriority: originalTask?.priority || 'Medium',
-            suggestedPriority: pt.priority as Priority, 
+            currentPriority: originalTask?.priority || 'Medium', // Fallback
+            suggestedPriority: pt.priority as Priority, // Assuming AI returns a valid Priority string
             reason: pt.reason,
           };
-        }).filter(s => !s.taskId.startsWith('temp_id_'));
+        }).filter(s => !s.taskId.startsWith('temp_id_')); // Filter out tasks that couldn't be matched
         
         setPrioritizedSuggestions(suggestions);
         if (suggestions.length > 0) {
@@ -329,6 +381,8 @@ export const AppDataProvider = ({ children }: { children: ReactNode }) => {
         });
         setPrioritizedSuggestions(prev => prev.filter(s => s.taskId !== taskId));
         toast({ title: "Priority Updated", description: `Task priority set to ${priority}.` });
+         // Manually update local state for tasks as onSnapshot is off
+        setTasks(prevTasks => prevTasks.map(task => task.id === taskId ? { ...task, priority: priority, updatedAt: new Date() } : task));
     } catch (error) {
         const firestoreError = error as FirestoreError;
         console.error(`AppDataContext: Error updating task priority for ${taskId} at ${taskDocRef.path}. Code: ${firestoreError.code}, Message: ${firestoreError.message}`, firestoreError);
