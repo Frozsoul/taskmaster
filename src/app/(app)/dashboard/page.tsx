@@ -35,7 +35,7 @@ export default function DashboardPage() {
     <div className="space-y-6">
       <PageHeader 
         title="Dashboard" 
-        description="Welcome back! Here's an overview of your MiinTaskMaster workspace."
+        description="Welcome back! Here's an overview of your MiinPlanner workspace."
         icon={LayoutDashboardIcon}
         actionButtons={<QuickAddTask />} 
       />

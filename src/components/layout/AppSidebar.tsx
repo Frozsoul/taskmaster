@@ -32,21 +32,21 @@ const navItems = [
   { href: "/prioritize", label: "Prioritize Tasks", icon: ListTodo },
 ];
 
-export const MiinTaskMasterLogo = () => ( // Exported for use in LoginPage if needed
+export const MiinPlannerLogo = () => (
   <svg
-    aria-label="MiinTaskMaster Logo"
+    aria-label="MiinPlanner Logo"
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 500 500"
-    className="h-10 w-10 text-primary group-data-[state=expanded]:text-accent" // Adjusted class for direct primary and accent
+    className="h-10 w-10 text-primary group-data-[state=expanded]:text-accent"
     fill="none"
   >
     <g>
         <polygon
-          fill="currentColor" // Will take text-primary
+          fill="currentColor"
           points="4,262 66.8,304.9 169.1,244.2 169.1,328.1 233.3,366.3 233.3,133"
         />
         <polygon
-          className="fill-[hsl(var(--accent))]" // Uses accent color directly, no need for complex group selector here if it always uses accent
+          className="fill-[hsl(var(--accent))]"
           points="496,262 433.2,304.9 330.9,244.2 330.9,328.1 266.7,366.3 266.7,133"
         />
     </g>
@@ -55,14 +55,14 @@ export const MiinTaskMasterLogo = () => ( // Exported for use in LoginPage if ne
 
 export function AppSidebar() {
   const pathname = usePathname();
-  const { logout, currentUser } = useAuth(); // Added currentUser for conditional rendering if needed
+  const { logout, currentUser } = useAuth(); 
 
   return (
     <Sidebar side="left" collapsible="icon">
       <SidebarHeader className="p-4">
         <Link href="/dashboard" className="flex items-center gap-2 group-data-[collapsible=icon]:justify-center">
-          <MiinTaskMasterLogo />
-          <span className="font-bold text-xl group-data-[collapsible=icon]:hidden text-sidebar-foreground">MiinTaskMaster</span>
+          <MiinPlannerLogo />
+          <span className="font-bold text-xl group-data-[collapsible=icon]:hidden text-sidebar-foreground">MiinPlanner</span>
         </Link>
       </SidebarHeader>
       <SidebarContent className="p-2">
@@ -86,7 +86,7 @@ export function AppSidebar() {
           ))}
         </SidebarMenu>
       </SidebarContent>
-      { currentUser && ( // Only show footer if user is logged in
+      { currentUser && ( 
         <SidebarFooter className="p-2 mt-auto border-t border-sidebar-border">
            <SidebarMenu>
               <SidebarMenuItem>

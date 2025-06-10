@@ -5,8 +5,8 @@ import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import Loading from '@/app/loading'; // Assuming you have a global loading component
-import { MiinTaskMasterLogo } from '@/components/layout/AppSidebar'; // Assuming logo is exportable
+import Loading from '@/app/loading'; 
+import { MiinPlannerLogo } from '@/components/layout/AppSidebar'; 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 
 export default function LoginPage() {
@@ -28,9 +28,9 @@ export default function LoginPage() {
       <Card className="w-full max-w-md shadow-xl">
         <CardHeader className="text-center">
           <div className="mx-auto mb-4">
-            <MiinTaskMasterLogo />
+            <MiinPlannerLogo />
           </div>
-          <CardTitle className="text-3xl font-bold text-primary">MiinTaskMaster</CardTitle>
+          <CardTitle className="text-3xl font-bold text-primary">MiinPlanner</CardTitle>
           <CardDescription className="text-muted-foreground">Sign in to access your workspace</CardDescription>
         </CardHeader>
         <CardContent>
