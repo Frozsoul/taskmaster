@@ -30,7 +30,7 @@ export default function LoginPage() {
           <div className="mx-auto mb-4">
             <MiinTaskMasterLogo />
           </div>
-          <CardTitle className="text-3xl font-bold text-primary">MiinPlanner</CardTitle>
+          <CardTitle className="text-3xl font-bold text-primary">MiinTaskMaster</CardTitle>
           <CardDescription className="text-muted-foreground">Sign in to access your workspace</CardDescription>
         </CardHeader>
         <CardContent>

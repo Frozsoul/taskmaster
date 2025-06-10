@@ -62,7 +62,7 @@ export function AppSidebar() {
       <SidebarHeader className="p-4">
         <Link href="/dashboard" className="flex items-center gap-2 group-data-[collapsible=icon]:justify-center">
           <MiinTaskMasterLogo />
-          <span className="font-bold text-xl group-data-[collapsible=icon]:hidden text-sidebar-foreground">MiinPlanner</span>
+          <span className="font-bold text-xl group-data-[collapsible=icon]:hidden text-sidebar-foreground">MiinTaskMaster</span>
         </Link>
       </SidebarHeader>
       <SidebarContent className="p-2">
