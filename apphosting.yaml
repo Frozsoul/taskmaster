@@ -1,7 +1,21 @@
-# Settings to manage and configure a Firebase App Hosting backend.
-# https://firebase.google.com/docs/app-hosting/configure
+# apphosting.yaml
 
 runConfig:
   # Increase this value if you'd like to automatically spin up
   # more instances in response to increased traffic.
   maxInstances: 1
+env:
+  - variable: NEXT_PUBLIC_FIREBASE_PROJECT_ID
+    value: miimanage
+  - variable: NEXT_PUBLIC_FIREBASE_API_KEY
+    value: YOUR_ACTUAL_API_KEY_HERE # <<< REPLACE THIS with your Firebase Web App API Key
+  - variable: NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
+    value: miimanage.firebaseapp.com # <<< Usually YOUR_PROJECT_ID.firebaseapp.com. Verify from Firebase console.
+  - variable: NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
+    value: miimanage.appspot.com
+  - variable: NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID
+    value: YOUR_MESSAGING_SENDER_ID_HERE # <<< REPLACE THIS with your Firebase Messaging Sender ID
+  - variable: NEXT_PUBLIC_FIREBASE_APP_ID
+    value: YOUR_APP_ID_HERE # <<< REPLACE THIS with your Firebase Web App ID
+  # Add any other NEXT_PUBLIC_ or server-side environment variables here if needed.
+  # For true server-side secrets, use Google Secret Manager integration.
