@@ -1,5 +1,4 @@
-
-import { initializeApp, getApp, getApps } from 'firebase/app';
+import { initializeApp, getApps } from 'firebase/app';
 import { getAuth, GoogleAuthProvider } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 
@@ -12,10 +11,18 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
-// Initialize Firebase
-const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
-const auth = getAuth(app);
+console.log("FIREBASE CONFIG:", firebaseConfig);
+
+if (Object.values(firebaseConfig).some(v => !v)) {
+  throw new Error("Missing Firebase config value: " + JSON.stringify(firebaseConfig));
+}
+
+const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
+
+// REMOVE the custom host/ssl config
 const db = getFirestore(app);
+
+const auth = getAuth(app);
 const googleAuthProvider = new GoogleAuthProvider();
 
 export { app, auth, db, googleAuthProvider };
